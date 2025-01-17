@@ -26,9 +26,9 @@ if __name__ == "__main__":
     start_epoch = 1
     
     parser = argparse.ArgumentParser(description='Image Deraining')
-    parser.add_argument('--train_dir', default='/data/user/zzcnb123456/ESDNet-master/data/Rain200H/train', type=str,
+    parser.add_argument('--train_dir', default='./data/Rain200H/train', type=str,
                         help='Directory of train images')
-    parser.add_argument('--val_dir', default='/data/user/zzcnb123456/ESDNet-master/data/Rain200H/test', type=str,
+    parser.add_argument('--val_dir', default='./data/Rain200H/test', type=str,
                         help='Directory of validation images')
     parser.add_argument('--model_save_dir', default='./checkpoints/', type=str, help='Path to save weights')
     parser.add_argument('--pretrain_weights', default='./checkpoints/model_best.pth', type=str,
