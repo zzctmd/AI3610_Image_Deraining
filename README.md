@@ -110,7 +110,7 @@ The stored visual results are obtained by using the improved model trained on Ra
     <th>Rain200L</th>
     <th>Rain200H</th>
     <th>Rain1200</th>
-    <th>RW_Rain</th>
+    <th>RW-Data</th>
   </tr>
 </thead>
 <tbody>
