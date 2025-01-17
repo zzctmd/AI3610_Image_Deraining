@@ -129,17 +129,24 @@ The stored visual results are obtained by using the improved model trained on Ra
 According to the following hints, the primary and intermediate parts of our major assignment project can be completed.
 
 >For Primary Task
+
 1.Download the  MNIST dataset from [交大云盘](https://jbox.sjtu.edu.cn/l/v1DzA5) and put it into the `./Primary Task/data` folder
+
 2.Run these commands for training
+
 ```
 cd Primary Task
 python SNN_MNIST.py
 ```
+
 3.The best version is also saved in [交大云盘](https://jbox.sjtu.edu.cn/l/v1DzA5), with an test accuracy rate of 0.9885.
 
 >For Intermediate Task
+
 1.Download the colorized-MNIST-master from [交大云盘](https://jbox.sjtu.edu.cn/l/71i7wM) and put it into the `./Intermediate Task` folder
+
 2.Run the `./Intermediate Task/Transformer_SNN_Colored MNIST.ipynb` 
+
 3.The model version is also saved in [交大云盘](https://jbox.sjtu.edu.cn/l/71i7wM)
 ## 🚨 Notes
 
