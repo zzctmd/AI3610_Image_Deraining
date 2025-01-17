@@ -155,4 +155,4 @@ python SNN_MNIST.py
 
 ## 👍 Acknowledgment
 
-This code is based on the [Restormer](https://github.com/swz30/Restormer), [spikingjelly](https://github.com/fangwei123456/spikingjelly),[DFOSD](https://github.com/JianzeLi-114/DFOSD) and [C2PNet](https://github.com/YuZheng9/C2PNet). Thanks for their awesome work.
+This code is based on the [Restormer](https://github.com/swz30/Restormer), [spikingjelly](https://github.com/fangwei123456/spikingjelly),[DFOSD](https://github.com/JianzeLi-114/DFOSD),[ESDNet](https://github.com/MingTian99/ESDNet) and [C2PNet](https://github.com/YuZheng9/C2PNet). Thanks for their awesome work.
