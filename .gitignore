@@ -1,0 +1,13 @@
+#忽略原数据保存位置
+data/*
+!data/.gitkeep
+#忽略输出结果保存位置
+result/*
+!result/.gitkeep
+#忽略模型训练保存位置
+checkpoints/*
+!checkpoints/.gitkeep
+#忽略模型下载位置
+/pretrained_models/Rain200H/model_best.pth
+
+
