@@ -9,5 +9,5 @@ checkpoints/*
 !checkpoints/.gitkeep
 #忽略模型下载位置
 /pretrained_models/Rain200H/model_best.pth
-
+/pretrained_models/Rain1200/model_best.pth
 

@@ -23,7 +23,7 @@ parser.add_argument('--save_path', type=str, default='./result/RW_data')
 parser.add_argument('--eval_workers', type=int, default=4)
 parser.add_argument('--crop_size', type=int, default=80)
 parser.add_argument('--overlap_size', type=int, default=8)
-parser.add_argument('--weights', type=str, default='./pretrained_models/Rain200H/model.pth')
+parser.add_argument('--weights', type=str, default='./pretrained_models/Rain1200/model_best.pth')
 opt = parser.parse_args()
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
