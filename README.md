@@ -22,7 +22,7 @@ conda activate ESDNet
 2. Install dependencies
 ```
 pip install torch==2.0.1+cu117 torchvision==0.15.2+cu117 -f https://download.pytorch.org/whl/torch_stable.html
-pip install matplotlib scikit-image opencv-python numpy einops natsort tqdm lpips tensorboardX
+pip install matplotlib scikit-image opencv-python numpy einops natsort tqdm lpips tensorboardX pyiqa
 ```
 3.prepare the spiking jelly latest version 0.0.0.0.15
 ```

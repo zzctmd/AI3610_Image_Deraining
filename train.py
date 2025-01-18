@@ -5,6 +5,7 @@ import torch
 torch.backends.cudnn.benchmark = True
 import torch.optim as optim
 from torch.utils.data import DataLoader
+import torch.nn.functional as F
 import random
 from dataset_load import Dataload
 import time
@@ -16,6 +17,7 @@ from losses import *
 from torch.utils.tensorboard import SummaryWriter
 import argparse
 from spikingjelly.activation_based import functional
+import pyiqa
 
 if __name__ == "__main__":
     ######### Set Seeds ###########
@@ -37,8 +39,8 @@ if __name__ == "__main__":
     parser.add_argument('--session', default='DID-Data_new', type=str, help='session')
     parser.add_argument('--patch_size_train', default=64, type=int, help='training patch size')
     parser.add_argument('--patch_size_test', default=64, type=int, help='val patch size')
-    parser.add_argument('--num_epochs', default=1000, type=int, help='num_epochs')
-    parser.add_argument('--batch_size', default=12, type=int, help='batch_size')
+    parser.add_argument('--num_epochs', default=200, type=int, help='num_epochs')
+    parser.add_argument('--batch_size', default=6, type=int, help='batch_size')
     parser.add_argument('--val_epochs', default=1, type=int, help='val_epochs')
     parser.add_argument('--lr', default=1e-3, type=int, help='LearningRate')
     parser.add_argument('--min_lr', default=1e-7, type=int, help='min_LearningRate')
@@ -46,7 +48,11 @@ if __name__ == "__main__":
     parser.add_argument('--clip_grad', default=1.0, type=float, help='clip_grad')
     parser.add_argument('--use_amp', default=False, type=bool, help='use_amp')
     parser.add_argument('--num_workers', default=8, type=int, help='num_workers')
+    #改动处
+    parser.add_argument('--dists_loss', default=True, type=bool, help='use dists_loss')
+    parser.add_argument('--dists_loss_wight', default=0.05, type=float, help='dists_loss_wight')
     args = parser.parse_args()
+
 
     start_lr = args.lr
     end_lr = args.min_lr
@@ -64,7 +70,14 @@ if __name__ == "__main__":
     batch_size = args.batch_size
     val_epochs = args.val_epochs
     num_workers = args.num_workers
-
+    #改动处
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    dists_loss_function = pyiqa.create_metric('dists', device=device, as_loss=True)
+    dists_loss_wight = args.dists_loss_wight
+    dists_label = args.dists_loss
+    edge_detection_model = utils.EdgeDetectionModel().to(device)
+    edge_detection_model.requires_grad_(False)
+    
     ######### Model ###########
     model_restoration = model
     model_restoration.cuda()
@@ -169,8 +182,15 @@ if __name__ == "__main__":
             restored = model_restoration(input_)
             if use_amp:
                 with torch.cuda.amp.autocast():
-                    ssim = criterion_ssim(restored, target_)
-                    loss = 1 - ssim
+                    #改动处
+                    if not dists_label:
+                        ssim = criterion_ssim(restored, target_)
+                        loss = 1-ssim
+                    else:
+                        mse_loss = F.mse_loss(restored, target_)
+                        dists_loss =dists_loss_function(restored, target_)
+                        dists_edge_loss = dists_loss_function(edge_detection_model(restored), edge_detection_model(target_))
+                        loss = mse_loss + dists_loss_wight*(dists_loss + dists_edge_loss)
                 scaler.scale(loss).backward()
                 # torch.nn.utils.clip_grad_norm_(model_restoration.parameters(), clip_grad)
                 scaler.step(optimizer)
@@ -178,9 +198,16 @@ if __name__ == "__main__":
                 functional.reset_net(model_restoration)
             else:
                 # L1_Loss = criterion_L1(restored, target_)
-                ssim = criterion_ssim(restored, target_)
+                #改动处
                 psnr = criterion_psnr(restored, target_)
-                loss = 1-ssim
+                if not dists_label:
+                    ssim = criterion_ssim(restored, target_)
+                    loss = 1-ssim
+                else:
+                    mse_loss = F.mse_loss(restored, target_)
+                    dists_loss =dists_loss_function(restored, target_)
+                    dists_edge_loss = dists_loss_function(edge_detection_model(restored), edge_detection_model(target_))
+                    loss = mse_loss + dists_loss_wight*(dists_loss + dists_edge_loss)
                 loss.backward()
                 scaled_loss += loss.item()
                 # torch.nn.utils.clip_grad_norm_(model_restoration.parameters(), clip_grad)
@@ -231,8 +258,8 @@ if __name__ == "__main__":
         scheduler.step()
         print("-" * 150)
         print(
-            "Epoch: {}\tTime: {:.4f}\tLoss: {:.4f}\tTrain_PSNR: {:.4f}\tSSIM: {:.4f}\tLearningRate {:.8f}\tTest_PSNR: {:.4f}".format(
-                epoch, time.time() - epoch_start_time, loss.item(), psnr_train, ssim, scheduler.get_lr()[0],
+            "Epoch: {}\tTime: {:.4f}\tLoss: {:.4f}\tTrain_PSNR: {:.4f}\tLearningRate {:.8f}\tTest_PSNR: {:.4f}".format(
+                epoch, time.time() - epoch_start_time, loss.item(), psnr_train, scheduler.get_lr()[0],
                 best_psnr, ))
         print("-" * 150)
     writer.close()
